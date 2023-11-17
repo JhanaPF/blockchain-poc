@@ -5,6 +5,7 @@ import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.util.*
 
+
 data class Transaction(val amount: Double, val payer: String, val payee: String) {
     fun toStringValue(): String {
         return "$amount:$payer->$payee"
@@ -28,11 +29,18 @@ class Chain private constructor() {
         val instance = Chain()
     }
 
-    val chain = mutableListOf<Block>()
+    var chain = mutableListOf<Block>()
+
+    init {
+        chain = mutableListOf(
+            // Ajoutez le premier bloc lors de la création de l'instance
+            Block("", Transaction(100.0, "genesis", "satoshi"))
+        )
+    }
 
     val lastBlock: Block
-        get() = chain.last()
-
+        get() = if (chain.isNotEmpty()) chain.last() else throw NoSuchElementException("La liste 'chain' est vide.")
+    
     fun mine(nonce: Int): Int {
         var solution = 1
         println("⛏️  mining...")
